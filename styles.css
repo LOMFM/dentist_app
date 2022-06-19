@@ -178,7 +178,7 @@ h1 {
 }
 
 .tooth .tooth-icons.selected {
-  background-color: pink;
+  /* background-color: pink; */
 }
 
 .teeth-controls {
@@ -195,4 +195,9 @@ h1 {
 
 h1 {
   margin-bottom: 32px;
+}
+
+.tooth img {
+  width: 100%;
+  height: auto;
 }

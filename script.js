@@ -125,7 +125,7 @@ export const get = async (api, hasAuth = true, isJSON = true) => {
 //////////////////////// POST REQUEST /////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-export const post = async (api, data, hasAuth = true, isJSON = true) => {
+const post = async (api, data, hasAuth = true, isJSON = true) => {
   const method = 'POST';
   const headers = {};
   if (hasAuth) {
@@ -143,14 +143,15 @@ export const post = async (api, data, hasAuth = true, isJSON = true) => {
   return fetch(api, { method, body, headers }).then((res) => res.json());
 };
 
-export const resHandler = (resolve, reject, res) => {
-  if (res?.status) {
-    return resolve(res.data || true);
+const resHandler = (resolve, reject, res) => {
+  if (res) {
+    return resolve(res);
   } else {
     return reject(res?.error?.message || res?.error || 'unknown_error');
   }
 };
-export const errorHandler = (reject, err) => {
+const errorHandler = (reject, err) => {
+  console.log('err', err);
   reject(err?.message || err || 'unknown_error');
 };
 
@@ -212,6 +213,7 @@ class TeethLoader {
       .load()
       .then((data) => {
         console.log('data', data);
+        this.initData(data);
       })
       .catch((err) => {
         console.error('err', err);
@@ -302,12 +304,10 @@ class TeethLoader {
           <div class="tooth">
             <div class="${status ? 'selected' : ''} tooth-icons">
               <div class="">
-                <img src="assets/img/root_${tooth}.jpg" alt="" />
-                <img src="" alt="" />
+                <img src="assets/img/root_${tooth}${status?'_active': ''}.jpg" alt="" />
               </div>
               <div class="">
-                <img src="assets/img/t_${tooth}.jpg" alt="" />
-                <img src="" alt="" />
+                <img src="assets/img/top_${tooth}${status?'_active': ''}.jpg" alt="" />
               </div>
             </div>
             <label>${tooth}</label>
