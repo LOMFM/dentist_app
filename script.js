@@ -300,7 +300,16 @@ class TeethLoader {
         const status = this.selectedData?.[tooth]?.status;
         const toothHTML = `
           <div class="tooth">
-            <div class="${status ? 'selected' : ''} tooth-icons"></div>
+            <div class="${status ? 'selected' : ''} tooth-icons">
+              <div class="">
+                <img src="assets/img/root_${tooth}.jpg" alt="" />
+                <img src="" alt="" />
+              </div>
+              <div class="">
+                <img src="assets/img/t_${tooth}.jpg" alt="" />
+                <img src="" alt="" />
+              </div>
+            </div>
             <label>${tooth}</label>
           </div>
         `;
