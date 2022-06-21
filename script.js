@@ -356,7 +356,9 @@ class TeethLoader {
             <td>${description || ''}</td>
           </tr>
         `;
-        tableHTML += rowHTML;
+        if (status) {
+          tableHTML += rowHTML;
+        }
         partHTML += toothHTML;
       });
       const partContainerHTML = `
