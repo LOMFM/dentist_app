@@ -1,7 +1,8 @@
 class Slider {
-  constructor(rangeElement, options) {
+  constructor(rangeElement, markerWrapper, options) {
     this.rangeElement = rangeElement;
     this.options = options;
+    this.markerWrapper = markerWrapper;
 
     // Attach a listener to "change" event
     this.rangeElement.addEventListener('input', this.updateSlider.bind(this));
@@ -17,6 +18,22 @@ class Slider {
     this.rangeElement.setAttribute('min', this.options.min);
     this.rangeElement.setAttribute('max', this.options.max);
     this.rangeElement.value = this.options.cur;
+
+    const count = this.options.max - this.options.min + 1;
+    let html = '';
+    for (let i = 0; i < count; i++) {
+      const marker = `
+        <div class="marker">
+          <div class="marker-dot">
+          </div>
+          <div class="marker-label">
+            ${this.options.labels?.[i] || ''}
+          </div>
+        </div>
+      `;
+      html += marker;
+    }
+    this.markerWrapper.innerHTML = html;
 
     this.updateSlider();
   }
@@ -227,6 +244,7 @@ class TeethLoader {
         <div class="range">
           <div class="form-group range__slider">
             <input type="range" step="1" />
+            <div class="slider-markers"></div>
           </div>
           <!--/form-group-->
           <div class="form-group range__value"></div>
@@ -240,11 +258,27 @@ class TeethLoader {
         <hr class="split-horizontal" />
         <div class="teeth"></div>
       </div>
+      <div class="teeth-table">
+       <table>
+        <thead>
+          <tr>
+            <th style="width: 70px;">Tooth</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+       </table> 
+      </div>
     `;
     this.teethDOM.innerHTML = html;
     let rangeElement = this.teethDOM.querySelector(
       '.teeth-controls .range [type="range"]'
     );
+    let markerWrapper = this.teethDOM.querySelector(
+      '.teeth-controls .range .slider-markers'
+    );
+
     this.teethDOM.querySelector('.print-btn').addEventListener('click', () => {
       window.print();
     });
@@ -256,7 +290,7 @@ class TeethLoader {
     };
 
     if (rangeElement) {
-      this.slider = new Slider(rangeElement, options);
+      this.slider = new Slider(rangeElement, markerWrapper, options);
 
       this.slider.init();
 
@@ -290,16 +324,19 @@ class TeethLoader {
         min: 1,
         max: dates.length,
         cur: 1,
+        labels: dates
       });
     }
   }
 
   generateTeethHTML() {
     let innerHTML = '';
+    let tableHTML = '';
     this.teeth.forEach((part) => {
       let partHTML = ``;
       part.teeth.forEach((tooth) => {
         const status = this.selectedData?.[tooth]?.status;
+        const description = this.selectedData?.[tooth]?.description;
         const toothHTML = `
           <div class="tooth">
             <div class="${status ? 'selected' : ''} tooth-icons">
@@ -313,6 +350,13 @@ class TeethLoader {
             <label>${tooth}</label>
           </div>
         `;
+        const rowHTML = `
+          <tr>
+            <td>${tooth}</td>
+            <td>${description || ''}</td>
+          </tr>
+        `;
+        tableHTML += rowHTML;
         partHTML += toothHTML;
       });
       const partContainerHTML = `
@@ -326,10 +370,11 @@ class TeethLoader {
       innerHTML += partContainerHTML;
     });
     this.teethDOM.querySelector('.teeth').innerHTML = innerHTML;
+    this.teethDOM.querySelector('.teeth-table tbody').innerHTML = tableHTML;
   }
 
   changeDate(date) {
-    console.log('changed date', date);
+    console.log('changed date', date, this.data[date]);
     this.date = date;
     this.selectedData = this.data[date];
     this.generateTeethHTML();
